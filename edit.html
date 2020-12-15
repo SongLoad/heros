@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bootstrap 101 Template</title>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./lib/css/edit.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <nav class="navbar  navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mymenu">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#"><img src="images/logo.png"></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+              <div class="row">
+                <div class="col-md-6 page-title">英雄信息修改</div>
+              </div>
+            </div>
+            <div class="panel-body">
+              <form action="#" method="" class="form-horizontal">
+                <!-- 隐藏一个input -->
+                <input type="hidden" name="id" />
+                <div class="form-group">
+                  <label for="heroName" class="col-sm-2 control-label">姓名</label>
+                  <div class="col-sm-10">
+                    <input required type="text" class="form-control" id="name" name="name" placeholder="请输入姓名"
+                      value="盖伦" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="skillName" class="col-sm-2 control-label">技能</label>
+                  <div class="col-sm-10">
+                    <input required type="text" class="form-control" id="skill" name="skill" placeholder="请输入技能"
+                      value="躲草丛" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="heroIcon" class="col-sm-2 control-label">头像</label>
+                  <div class="col-sm-10">
+                    <img src="lib/img/盖伦.png" alt="">
+                    <input required type="file" class="file-input" id="heroIcon" name="avatar" />
+                    <!-- 预览的标签 -->
+                    <img src="./images/盖伦.png" class="preview" alt="" />
+
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-save">
+                      保存
+                    </button>
+                    <button type="submit" class="btn btn-cancel">取消</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./lib/bootstrap/js/jquery-1.12.4.js"></script>
+  <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+  <script>
+
+    // var id = Number(localStorage.getItem('hero'));
+    // 获取id
+    var id = location.search;
+
+    // 通过id渲染界面
+    $.ajax({
+      url: "http://www.itcbc.com:8080/api/hero/list" + id,
+      success: function (res) {
+        $("#name").val(res.data.name);
+        $("#skill").val(res.data.skill);
+        $('.preview').attr('src', "http://www.itcbc.com:8080/" + res.data.avatar);
+        id = res.data.id;
+      }
+    })
+
+    // $.get("http://www.itcbc.com:8080/api/hero/list" + id, function (res) {
+    //   $("#name").val(res.data.name);
+    //   $("#skill").val(res.data.skill);
+    //   $('.preview').attr('src', "http://www.itcbc.com:8080/" + res.data.avatar);
+    // })
+
+    // 选择文件后
+    $("#heroIcon").on("change", function () {
+      if (this.files.length > 0) {
+        var obj = this.files[0];
+        var url = URL.createObjectURL(obj);
+        $('.preview').attr("src", url);
+      }
+    })
+    // 更新英雄信息
+    $('form').on('submit', function (e) {
+      e.preventDefault();
+      var fd = new FormData(this);
+
+      fd.set('id', id);
+      fd.forEach(function (value, key) {
+        console.log(key, value);
+      })
+
+      $.ajax({
+        type: "POST",
+        url: 'http://www.itcbc.com:8080/api/hero/update',
+        data: fd,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+          location.href = './index.html';
+        }
+      })
+
+
+
+    })
+  </script>
+</body>
+
+</html>
